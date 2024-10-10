@@ -1,13 +1,16 @@
-use actix_web::{ get, HttpResponse };
+use actix_web::{ web::{ self, ServiceConfig }, HttpResponse };
+use sqlx::PgPool;
 
-#[get("/")]
+pub fn service(cfg: &mut ServiceConfig) {
+    cfg.route("/health", web::get().to(health));
+}
+
 async fn hello_world() -> &'static str {
     "Hello World!"
 }
 
 #[tracing::instrument]
-#[get("/version")]
-async fn version(db: actix_web::web::Data<sqlx::PgPool>) -> String {
+async fn version(db: web::Data<PgPool>) -> String {
     tracing::info!("Getting version");
 
     let result: Result<String, sqlx::Error> = sqlx
@@ -21,7 +24,6 @@ async fn version(db: actix_web::web::Data<sqlx::PgPool>) -> String {
 }
 
 #[tracing::instrument]
-#[get("/health")]
 async fn health() -> HttpResponse {
     HttpResponse::Ok().append_header(("version", "0.0.1")).finish()
 }
