@@ -642,7 +642,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "drip-api-shuttle"
+name = "drip-rust-movie-collection"
 version = "0.1.0"
 dependencies = [
  "actix-web",
