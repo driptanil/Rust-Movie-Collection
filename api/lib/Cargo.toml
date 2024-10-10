@@ -4,3 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# actix
+actix-web = "4.9.0"
+# database
+sqlx = { version = "0.8.2", default-features = false, features = [
+    "tls-native-tls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "json",
+] }
+# tracing
+tracing = "0.1"
