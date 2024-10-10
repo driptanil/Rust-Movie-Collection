@@ -1,4 +1,4 @@
-use actix_web::get;
+use actix_web::{ get, HttpResponse };
 
 #[get("/")]
 async fn hello_world() -> &'static str {
@@ -18,4 +18,10 @@ async fn version(db: actix_web::web::Data<sqlx::PgPool>) -> String {
         Ok(version) => version,
         Err(e) => format!("Failed to fetch database version: {:?}", e),
     }
+}
+
+#[tracing::instrument]
+#[get("/health")]
+async fn health() -> HttpResponse {
+    HttpResponse::Ok().append_header(("version", "0.0.1")).finish()
 }
