@@ -9,3 +9,4 @@ sqlx = { version = "0.8.2", default-features = false, features = [
     "chrono",
     "json",
 ] }
+serde = { version = "1.0", features = ["derive"] }
