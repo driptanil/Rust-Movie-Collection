@@ -9,7 +9,7 @@ pub fn service(cfg: &mut web::ServiceConfig) {
             .route("/{movie_id}", web::get().to(get_by_id))
             .route("", web::post().to(post))
             .route("", web::put().to(put))
-            .route("/{film_id}", web::delete().to(delete))
+            .route("/{movie_id}", web::delete().to(delete))
     );
 }
 
