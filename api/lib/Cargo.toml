@@ -18,3 +18,5 @@ sqlx = { version = "0.8.2", default-features = false, features = [
 # tracing
 tracing = "0.1"
 actix-rt = "2.5.0"
+async-trait = "0.1.83"
+shared = { path = "../../shared" }
