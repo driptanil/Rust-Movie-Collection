@@ -1,4 +1,3 @@
-pub mod health;
-pub mod version;
-pub mod movies;
-pub mod repositories;
+pub mod services;
+mod repositories;
+mod db;

@@ -1,1 +1,2 @@
-pub mod movie_repo;
+mod postgres;
+mod movie_repo;
