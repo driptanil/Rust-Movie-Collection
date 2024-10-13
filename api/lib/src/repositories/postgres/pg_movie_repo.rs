@@ -1,4 +1,4 @@
-use shared::models::movie::{ CreateMovieRequest, Movie };
+use shared::models::movie::{ CreateMovieRequest, Movie, UpdateMovieRequest };
 use sqlx::types::Uuid;
 
 use crate::{
@@ -48,7 +48,7 @@ impl MovieRepository for PostgresRepository {
             .map_err(|e| e.to_string())
     }
 
-    async fn update_movie(&self, movie: &Movie) -> MovieResult<Movie> {
+    async fn update_movie(&self, movie: &UpdateMovieRequest) -> MovieResult<Movie> {
         // Implementation for updating a movie
         sqlx::query_as::<_, Movie>(
             r#"

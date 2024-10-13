@@ -20,3 +20,13 @@ pub struct CreateMovieRequest {
     pub year: u16,
     pub poster: Option<String>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, FromRow)]
+pub struct UpdateMovieRequest {
+    pub id: Uuid,
+    pub title: String,
+    pub director: String,
+    #[sqlx(try_from = "i16")]
+    pub year: u16,
+    pub poster: Option<String>,
+}

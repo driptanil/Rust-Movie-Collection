@@ -1,5 +1,10 @@
 use actix_web::{ web, HttpResponse };
-use sqlx::PgPool;
+use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
+use sqlx::types::Uuid;
+
+use crate::repositories::movie_repo::MovieRepository;
+
+type Repository = web::Data<Box<dyn MovieRepository>>;
 
 pub fn service(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -13,37 +18,47 @@ pub fn service(cfg: &mut web::ServiceConfig) {
     );
 }
 
-#[tracing::instrument]
-pub async fn get_all(db: web::Data<PgPool>) -> HttpResponse {
+pub async fn get_all(repo: Repository) -> HttpResponse {
     tracing::info!("Getting all movies");
 
-    HttpResponse::Ok().finish()
+    match repo.get_movies().await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
+    }
 }
 
-#[tracing::instrument]
-pub async fn get_by_id(db: web::Data<PgPool>) -> HttpResponse {
+pub async fn get_by_id(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
     tracing::info!("Getting movie by id");
 
-    HttpResponse::Ok().finish()
+    match repo.get_movie(&movie_id).await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
+    }
 }
 
-#[tracing::instrument]
-async fn post() -> HttpResponse {
+async fn post(request: web::Json<CreateMovieRequest>, repo: Repository) -> HttpResponse {
     tracing::info!("Creating a new movie");
 
-    HttpResponse::Ok().finish()
+    match repo.create_movie(&request).await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
+    }
 }
 
-#[tracing::instrument]
-async fn put() -> HttpResponse {
+async fn put(request: web::Json<UpdateMovieRequest>, repo: Repository) -> HttpResponse {
     tracing::info!("Updating a movie");
 
-    HttpResponse::Ok().finish()
+    match repo.update_movie(&request).await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
+    }
 }
 
-#[tracing::instrument]
-async fn delete() -> HttpResponse {
+async fn delete(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
     tracing::info!("Deleting a movie");
 
-    HttpResponse::Ok().finish()
+    match repo.delete_movie(&movie_id).await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
+    }
 }
