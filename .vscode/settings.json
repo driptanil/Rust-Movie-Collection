@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 24489,
+            "driver": "PostgreSQL",
+            "password": "postgres",
+            "username": "postgres",
+            "name": "rust-movies",
+            "database": "drip-rust-movie-collection"
+        }
+    ]
+}

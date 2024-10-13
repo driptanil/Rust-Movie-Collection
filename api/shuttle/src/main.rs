@@ -13,7 +13,9 @@ async fn actix_web(
         .execute(include_str!("../../migrations/postgres/schema.sql")).await
         .map_err(CustomError::new)?;
 
-    let repository = api_lib::db::postgres::PostgresRepository::new(pool);
+    check_db_connection(&pool).await.map_err(CustomError::new)?;
+
+    let repository: api_lib::db::postgres::PostgresRepository = api_lib::db::postgres::PostgresRepository::new(pool);
     let repository = actix_web::web::Data::new(repository);
 
     let config = move |cfg: &mut ServiceConfig| {
@@ -24,4 +26,10 @@ async fn actix_web(
     };
 
     Ok(config.into())
+}
+
+async fn check_db_connection(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
+    // Perform a simple query to test connection
+    sqlx::query("SELECT 1").execute(pool).await?;
+    Ok(())
 }

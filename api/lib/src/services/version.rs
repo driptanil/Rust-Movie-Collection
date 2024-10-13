@@ -2,11 +2,11 @@ use actix_web::web;
 use sqlx::PgPool;
 
 pub fn service(cfg: &mut web::ServiceConfig) {
-    cfg.route("/version", web::get().to(version));
+    cfg.route("/version", web::get().to(get));
 }
 
 #[tracing::instrument]
-pub async fn version(db: web::Data<PgPool>) -> String {
+pub async fn get(db: web::Data<PgPool>) -> String {
     tracing::info!("Getting version");
 
     let result: Result<String, sqlx::Error> = sqlx

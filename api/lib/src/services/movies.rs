@@ -9,7 +9,7 @@ type Repository = web::Data<Box<dyn MovieRepository>>;
 pub fn service(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web
-            ::scope("/v1/movies")
+            ::scope("/movies")
             .route("", web::get().to(get_all))
             .route("/{movie_id}", web::get().to(get_by_id))
             .route("", web::post().to(post))

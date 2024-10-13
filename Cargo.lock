@@ -278,6 +278,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "api-tests"
+version = "0.1.0"
+dependencies = [
+ "actix-rt",
+ "actix-web",
+ "api-lib",
+ "async-trait",
+ "shared",
+ "sqlx",
+]
+
+[[package]]
 name = "async-stream"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
