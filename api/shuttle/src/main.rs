@@ -9,7 +9,9 @@ async fn actix_web(
     #[shuttle_shared_db::Postgres] pool: sqlx::PgPool
 ) -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clone + 'static> {
     // initialize the database if not already initialized
-    pool.execute(include_str!("../../migrations/schema.sql")).await.map_err(CustomError::new)?;
+    pool
+        .execute(include_str!("../../migrations/postgres/schema.sql")).await
+        .map_err(CustomError::new)?;
 
     let repository = api_lib::db::postgres::PostgresRepository::new(pool);
     let repository = actix_web::web::Data::new(repository);
