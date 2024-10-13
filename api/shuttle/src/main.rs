@@ -11,10 +11,11 @@ async fn actix_web(
     // initialize the database if not already initialized
     pool.execute(include_str!("../../migrations/schema.sql")).await.map_err(CustomError::new)?;
 
-    let pool = actix_web::web::Data::new(pool);
+    let repository = api_lib::db::postgres::PostgresRepository::new(pool);
+    let repository = actix_web::web::Data::new(repository);
 
     let config = move |cfg: &mut ServiceConfig| {
-        cfg.app_data(pool)
+        cfg.app_data(repository)
             .configure(health::service)
             .configure(version::service)
             .configure(movies::service);
