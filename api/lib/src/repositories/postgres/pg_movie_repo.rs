@@ -35,14 +35,14 @@ impl MovieRepository for PostgresRepository {
     async fn create_movie(&self, movie: &CreateMovieRequest) -> MovieResult<Movie> {
         sqlx::query_as::<_, Movie>(
             r#"
-            INSERT INTO movies(title, director, year, poster)
-            FROM ($1, $2, $3, $4)
+            INSERT INTO movies (title, director, year, poster)
+            VALUES ($1, $2, $3, $4)
             RETURNING id, title, director, year, poster, created_at, updated_at
             "#
         )
             .bind(&movie.title)
             .bind(&movie.director)
-            .bind(*&movie.year as i16)
+            .bind(movie.year as i16)
             .bind(&movie.poster)
             .fetch_one(&self.pool).await
             .map_err(|e| e.to_string())

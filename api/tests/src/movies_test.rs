@@ -74,7 +74,7 @@ mod test {
             .configure(service::<api_lib::db::postgres::PostgresRepository>);
 
         let mut app = test::init_service(app).await;
-        let request = test::TestRequest::get().uri("/movies").to_request();
+        let request = test::TestRequest::get().uri("/api/movies").to_request();
         let response = test::call_service(&mut app, request).await;
 
         assert!(response.status().is_success());
@@ -89,7 +89,10 @@ mod test {
 
         let movie_id = Uuid::new_v4();
         let mut app = test::init_service(app).await;
-        let request = test::TestRequest::get().uri(&format!("/movies/{}", movie_id)).to_request();
+        let request = test::TestRequest
+            ::get()
+            .uri(&format!("/api/movies/{}", movie_id))
+            .to_request();
         let response = test::call_service(&mut app, request).await;
 
         assert!(response.status().is_success());
@@ -110,7 +113,11 @@ mod test {
             poster: Some("http://example.com/testposter.jpg".to_string()),
         };
 
-        let request = test::TestRequest::post().uri("/movies").set_json(&new_movie).to_request();
+        let request = test::TestRequest
+            ::post()
+            .uri("/api/movies")
+            .set_json(&new_movie)
+            .to_request();
 
         let response = test::call_service(&mut app, request).await;
 
@@ -155,7 +162,7 @@ mod test {
         let mut app = test::init_service(app).await;
         let request = test::TestRequest
             ::delete()
-            .uri(&format!("/movies/{}", movie_id))
+            .uri(&format!("/api/movies/{}", movie_id))
             .to_request();
         let response = test::call_service(&mut app, request).await;
 

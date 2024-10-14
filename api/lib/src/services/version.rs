@@ -1,20 +1,15 @@
-use actix_web::web;
-use sqlx::PgPool;
+use actix_web::{ web, HttpResponse };
+use crate::repositories::version_repo::VersionRepository as Repository;
 
-pub fn service(cfg: &mut web::ServiceConfig) {
-    cfg.route("/version", web::get().to(get));
+pub fn service<R: Repository>(cfg: &mut web::ServiceConfig) {
+    cfg.route("/version", web::get().to(get::<R>));
 }
 
-#[tracing::instrument]
-pub async fn get(db: web::Data<PgPool>) -> String {
+pub async fn get<R: Repository>(repo: web::Data<R>) -> HttpResponse {
     tracing::info!("Getting version");
 
-    let result: Result<String, sqlx::Error> = sqlx
-        ::query_scalar("SELECT version()")
-        .fetch_one(db.get_ref()).await;
-
-    match result {
-        Ok(version) => version,
-        Err(e) => format!("Failed to fetch database version: {:?}", e),
+    match repo.get_version().await {
+        Ok(data) => HttpResponse::Ok().body(data),
+        Err(e) => HttpResponse::InternalServerError().body(e),
     }
 }

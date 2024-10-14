@@ -24,7 +24,7 @@ async fn actix_web(
                 ::scope("/api")
                 .app_data(repo)
                 .configure(health::service)
-                .configure(version::service)
+                .configure(version::service::<api_lib::db::postgres::PostgresRepository>)
                 .configure(movies::service::<api_lib::db::postgres::PostgresRepository>)
         );
     };
