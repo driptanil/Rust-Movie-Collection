@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct PostgresRepository {
     pub pool: sqlx::PgPool,
 }

@@ -1,4 +1,4 @@
-use actix_web::web::ServiceConfig;
+use actix_web::web::{ self, ServiceConfig };
 use api_lib::services::{ health, movies, version };
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
@@ -15,14 +15,18 @@ async fn actix_web(
 
     check_db_connection(&pool).await.map_err(CustomError::new)?;
 
-    let repository: api_lib::db::postgres::PostgresRepository = api_lib::db::postgres::PostgresRepository::new(pool);
-    let repository = actix_web::web::Data::new(repository);
+    let repo = api_lib::db::postgres::PostgresRepository::new(pool);
+    let repo = web::Data::new(repo);
 
     let config = move |cfg: &mut ServiceConfig| {
-        cfg.app_data(repository)
-            .configure(health::service)
-            .configure(version::service)
-            .configure(movies::service);
+        cfg.service(
+            web
+                ::scope("/api")
+                .app_data(repo)
+                .configure(health::service)
+                .configure(version::service)
+                .configure(movies::service::<api_lib::db::postgres::PostgresRepository>)
+        );
     };
 
     Ok(config.into())
