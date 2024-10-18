@@ -3,7 +3,7 @@ use sqlx::types::Uuid;
 
 use crate::{
     db::postgres::PostgresRepository,
-    repositories::movie_repo::{ MovieRepository, MovieResult },
+    repositories::movie::{ MovieRepository, RepoResult as MovieResult },
 };
 
 #[async_trait::async_trait]

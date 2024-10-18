@@ -11,3 +11,6 @@ sqlx = { version = "0.8.2", default-features = false, features = [
     "derive",
 ] }
 serde = { version = "1.0", features = ["derive"] }
+# docs
+apistos = { version = "0.4.1", features = ["extras", "qs_query"] }
+schemars = { package = "apistos-schemars", version = "0.8", features = ["chrono", "uuid1", "url", "rust_decimal"] }

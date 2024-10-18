@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "api/lib",
-    "api/shuttle", "api/tests",
+    "api/config", "api/tests",
     "shared"
 ]
 resolver = "2"

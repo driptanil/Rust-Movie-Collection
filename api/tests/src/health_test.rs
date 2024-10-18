@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod test {
     use actix_web::{ http::StatusCode, App };
-    use api_lib::services::health::{ get_health, service, API_VERSION };
+    use api_lib::services::health::{ get_health, API_VERSION };
+    use api_lib::routers::health::router;
 
     #[actix_rt::test]
     async fn health_check_works() {
@@ -20,7 +21,7 @@ mod test {
 
     #[actix_rt::test]
     async fn health_check_works_endpoint() {
-        let app = App::new().configure(service);
+        let app = App::new().configure(router);
 
         let mut app = actix_web::test::init_service(app).await;
 

@@ -1,7 +1,22 @@
+use apistos::ApiComponent;
+use schemars::JsonSchema;
 use serde::{ Deserialize, Serialize };
 use sqlx::{ prelude::FromRow, types::{ chrono::{ DateTime, Utc }, Uuid } };
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, FromRow)]
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Default,
+    FromRow,
+    JsonSchema,
+    ApiComponent
+)]
 pub struct Movie {
     pub id: Uuid,
     pub title: String,
@@ -12,7 +27,20 @@ pub struct Movie {
     pub created_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
 }
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, FromRow)]
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Default,
+    FromRow,
+    JsonSchema,
+    ApiComponent
+)]
 pub struct CreateMovieRequest {
     pub title: String,
     pub director: String,
@@ -21,7 +49,20 @@ pub struct CreateMovieRequest {
     pub poster: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, FromRow)]
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Default,
+    FromRow,
+    JsonSchema,
+    ApiComponent
+)]
 pub struct UpdateMovieRequest {
     pub id: Uuid,
     pub title: String,

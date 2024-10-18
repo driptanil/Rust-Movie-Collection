@@ -2,11 +2,11 @@ use actix_web::{ web, HttpResponse };
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
 use sqlx::types::Uuid;
 
-use crate::repositories::movie_repo::MovieRepository as Repository;
+use crate::repositories::movie::MovieRepository as Repository;
 
 // type Repository = web::Data<Box<dyn MovieRepository>>;
 
-pub fn service<R: Repository>(cfg: &mut web::ServiceConfig) {
+pub fn router<R: Repository>(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web
             ::scope("/movies")
