@@ -23,4 +23,5 @@ async-trait = "0.1.83"
 shared = { path = "../../shared" }
 
 # docs
+serde_json = "1.0.70"
 utoipa = { version = "= 3.0.2", features = ["actix_extras"] }

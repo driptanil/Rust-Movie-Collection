@@ -322,6 +322,7 @@ dependencies = [
  "actix-rt",
  "actix-web",
  "async-trait",
+ "serde_json",
  "shared",
  "sqlx",
  "tracing",
@@ -1112,6 +1113,7 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "api-lib",
+ "shared",
  "shuttle-actix-web",
  "shuttle-runtime",
  "shuttle-shared-db",
@@ -3048,6 +3050,7 @@ dependencies = [
  "apistos-schemars",
  "serde",
  "sqlx",
+ "utoipa 3.0.2",
 ]
 
 [[package]]

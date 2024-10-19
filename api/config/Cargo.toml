@@ -23,6 +23,7 @@ sqlx = { version = "0.8.2", default-features = false, features = [
 
 # lib
 api-lib = { path = "../lib" }
+shared = { path = "../../shared" }
 
 # docs
 

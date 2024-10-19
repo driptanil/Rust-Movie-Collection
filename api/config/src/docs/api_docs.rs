@@ -4,10 +4,9 @@ use utoipa::OpenApi;
 #[derive(OpenApi)]
 #[openapi(
     paths(api_lib::routers::version::get),
-    components(schemas()),
+    components(schemas(shared::models::version::Version)),
     tags(
-        (name = "Auth", description = "A authentication routes"),
-        (name = "Todo", description = "A todo routes"),
+        (name = "Movie", description = "Movies routes"),
         (name = "Server Metadata", description = "A server metadata routes")
     )
 )]
