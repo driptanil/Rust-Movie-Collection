@@ -7,6 +7,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(web::scope("/version").service(get));
 }
 
+#[utoipa::path(context_path = "/api/version")]
 #[get("")]
 pub async fn get(repo: Repository) -> HttpResponse {
     tracing::info!("Getting version");

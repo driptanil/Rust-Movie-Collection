@@ -1,17 +1,20 @@
-use actix_web::web::{ self, ServiceConfig };
-use api_lib::{
-    repositories::{ movie::MovieRepository, version::VersionRepository, AppRepository },
-    routers::{ health, movies, version },
-};
+use actix_web::web;
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sqlx::Executor;
-use api_lib::db::postgres::PostgresRepository;
+use api_lib::{
+    db::postgres::PostgresRepository,
+    repositories::AppRepository,
+    routers::init_routes,
+};
+
+mod docs;
+use docs::init_docs;
 
 #[shuttle_runtime::main]
 async fn actix_web(
     #[shuttle_shared_db::Postgres] pool: sqlx::PgPool
-) -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clone + 'static> {
+) -> ShuttleActixWeb<impl FnOnce(&mut web::ServiceConfig) + Send + Clone + 'static> {
     pool
         .execute(include_str!("../../migrations/postgres/schema.sql")).await
         .map_err(CustomError::new)?;
@@ -21,15 +24,8 @@ async fn actix_web(
     let repo: Box<dyn AppRepository> = Box::new(PostgresRepository::new(pool));
     let repo = web::Data::new(repo);
 
-    let config = move |cfg: &mut ServiceConfig| {
-        cfg.service(
-            web
-                ::scope("/api")
-                .app_data(repo.clone())
-                .configure(health::router)
-                .configure(version::init_routes)
-                .configure(movies::init_routes)
-        );
+    let config = move |cfg: &mut web::ServiceConfig| {
+        cfg.app_data(repo.clone()).configure(init_routes).configure(init_docs);
     };
 
     Ok(config.into())

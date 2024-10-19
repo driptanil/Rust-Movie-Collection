@@ -25,5 +25,6 @@ sqlx = { version = "0.8.2", default-features = false, features = [
 api-lib = { path = "../lib" }
 
 # docs
-apistos = { version = "0.4.1", features = ["extras", "qs_query"] }
-schemars = { package = "apistos-schemars", version = "0.8", features = ["chrono", "uuid1", "url", "rust_decimal"] }
+
+utoipa = { version = "= 3.0.2", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "= 2.0.1", features = ["actix-web"] }
