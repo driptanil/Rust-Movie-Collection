@@ -1,5 +1,14 @@
+use movie::MovieRepository;
+use version::VersionRepository;
+
+use crate::db::postgres::PostgresRepository;
+
 pub mod movie;
 pub mod version;
+
+pub trait AppRepository: VersionRepository + MovieRepository + Send + Sync + 'static {}
+
+impl AppRepository for PostgresRepository {}
 
 // #[async_trait::async_trait]
 // pub trait Repository<C, R, U, D>: Send + Sync + 'static {

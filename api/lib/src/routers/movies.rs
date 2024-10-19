@@ -1,24 +1,25 @@
-use actix_web::{ web, HttpResponse };
+use actix_web::{ get, post, put, delete, web, HttpResponse };
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
 use sqlx::types::Uuid;
 
-use crate::repositories::movie::MovieRepository as Repository;
+use crate::repositories::AppRepository;
 
-// type Repository = web::Data<Box<dyn MovieRepository>>;
+type Repository = web::Data<Box<dyn AppRepository>>;
 
-pub fn router<R: Repository>(cfg: &mut web::ServiceConfig) {
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web
             ::scope("/movies")
-            .route("", web::get().to(get_all::<R>))
-            .route("/{movie_id}", web::get().to(get_by_id::<R>))
-            .route("", web::post().to(post::<R>))
-            .route("", web::put().to(put::<R>))
-            .route("/{movie_id}", web::delete().to(delete::<R>))
+            .service(get_all)
+            .service(get_by_id)
+            .service(post)
+            .service(put)
+            .service(delete)
     );
 }
 
-pub async fn get_all<R: Repository>(repo: web::Data<R>) -> HttpResponse {
+#[get("")]
+pub async fn get_all(repo: Repository) -> HttpResponse {
     tracing::info!("Getting all movies");
 
     match repo.get_movies().await {
@@ -27,10 +28,8 @@ pub async fn get_all<R: Repository>(repo: web::Data<R>) -> HttpResponse {
     }
 }
 
-pub async fn get_by_id<R: Repository>(
-    movie_id: web::Path<Uuid>,
-    repo: web::Data<R>
-) -> HttpResponse {
+#[get("/{movie_id}")]
+pub async fn get_by_id(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
     tracing::info!("Getting movie by id");
 
     match repo.get_movie(&movie_id).await {
@@ -39,10 +38,8 @@ pub async fn get_by_id<R: Repository>(
     }
 }
 
-async fn post<R: Repository>(
-    request: web::Json<CreateMovieRequest>,
-    repo: web::Data<R>
-) -> HttpResponse {
+#[post("")]
+async fn post(request: web::Json<CreateMovieRequest>, repo: Repository) -> HttpResponse {
     tracing::info!("Creating a new movie");
 
     match repo.create_movie(&request).await {
@@ -51,10 +48,8 @@ async fn post<R: Repository>(
     }
 }
 
-async fn put<R: Repository>(
-    request: web::Json<UpdateMovieRequest>,
-    repo: web::Data<R>
-) -> HttpResponse {
+#[put("")]
+async fn put(request: web::Json<UpdateMovieRequest>, repo: Repository) -> HttpResponse {
     tracing::info!("Updating a movie");
 
     match repo.update_movie(&request).await {
@@ -63,7 +58,8 @@ async fn put<R: Repository>(
     }
 }
 
-async fn delete<R: Repository>(movie_id: web::Path<Uuid>, repo: web::Data<R>) -> HttpResponse {
+#[delete("/{movie_id}")]
+async fn delete(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
     tracing::info!("Deleting a movie");
 
     match repo.delete_movie(&movie_id).await {

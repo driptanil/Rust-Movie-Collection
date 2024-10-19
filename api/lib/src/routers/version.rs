@@ -1,11 +1,14 @@
-use actix_web::{ web, HttpResponse };
-use crate::repositories::version::VersionRepository as Repository;
+use actix_web::{ get, web, HttpResponse };
+use crate::repositories::AppRepository;
 
-pub fn router<R: Repository>(cfg: &mut web::ServiceConfig) {
-    cfg.route("/version", web::get().to(get::<R>));
+type Repository = web::Data<Box<dyn AppRepository>>;
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::scope("/version").service(get));
 }
 
-pub async fn get<R: Repository>(repo: web::Data<R>) -> HttpResponse {
+#[get("")]
+pub async fn get(repo: Repository) -> HttpResponse {
     tracing::info!("Getting version");
 
     match repo.get_version().await {
