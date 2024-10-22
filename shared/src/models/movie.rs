@@ -1,7 +1,7 @@
 use apistos::ApiComponent;
 use schemars::JsonSchema;
+use sea_orm::prelude::{ DateTimeWithTimeZone, Uuid };
 use serde::{ Deserialize, Serialize };
-use sqlx::{ prelude::FromRow, types::{ chrono::{ DateTime, Utc }, Uuid } };
 
 #[derive(
     Serialize,
@@ -13,7 +13,6 @@ use sqlx::{ prelude::FromRow, types::{ chrono::{ DateTime, Utc }, Uuid } };
     PartialOrd,
     Ord,
     Default,
-    FromRow,
     JsonSchema,
     ApiComponent
 )]
@@ -21,12 +20,12 @@ pub struct Movie {
     pub id: Uuid,
     pub title: String,
     pub director: String,
-    #[sqlx(try_from = "i16")]
-    pub year: u16,
+    pub year: i16,
     pub poster: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<DateTimeWithTimeZone>,
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
+
 #[derive(
     Serialize,
     Deserialize,
@@ -37,14 +36,12 @@ pub struct Movie {
     PartialOrd,
     Ord,
     Default,
-    FromRow,
     JsonSchema,
     ApiComponent
 )]
 pub struct CreateMovieRequest {
     pub title: String,
     pub director: String,
-    #[sqlx(try_from = "i16")]
     pub year: u16,
     pub poster: Option<String>,
 }
@@ -59,7 +56,6 @@ pub struct CreateMovieRequest {
     PartialOrd,
     Ord,
     Default,
-    FromRow,
     JsonSchema,
     ApiComponent
 )]
@@ -67,7 +63,6 @@ pub struct UpdateMovieRequest {
     pub id: Uuid,
     pub title: String,
     pub director: String,
-    #[sqlx(try_from = "i16")]
     pub year: u16,
     pub poster: Option<String>,
 }

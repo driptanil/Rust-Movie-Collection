@@ -2,6 +2,7 @@
 members = [
     "api/lib",
     "api/config", "api/tests",
-    "shared"
+    "shared",
+    "migration"
 ]
 resolver = "2"

@@ -19,7 +19,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             db: "Postgres 13.3".to_string(),
         }),
     )),
-    tag = "Movies"
+    tag = "Info"
 )]
 #[get("")]
 pub async fn get(repo: Repository) -> HttpResponse {

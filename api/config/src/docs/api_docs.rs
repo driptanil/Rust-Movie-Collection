@@ -7,7 +7,7 @@ use utoipa::OpenApi;
     components(schemas(shared::models::version::Version)),
     tags(
         (name = "Movie", description = "Movies routes"),
-        (name = "Server Metadata", description = "A server metadata routes")
+        (name = "Info", description = "Info routes")
     )
 )]
 pub struct ApiDoc;

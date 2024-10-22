@@ -4,12 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-sqlx = { version = "0.8.2", default-features = false, features = [
-    "uuid",
-    "chrono",
-    "json",
-    "derive",
-] }
+sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros", "with-chrono", "with-json", "with-uuid" ] }
 serde = { version = "1.0", features = ["derive"] }
 # docs
 apistos = { version = "0.4.1", features = ["extras", "qs_query"] }
