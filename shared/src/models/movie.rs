@@ -1,6 +1,7 @@
 use apistos::ApiComponent;
-use schemars::JsonSchema;
 use sea_orm::prelude::{ DateTimeWithTimeZone, Uuid };
+use utoipa::ToSchema;
+use schemars::JsonSchema;
 use serde::{ Deserialize, Serialize };
 
 #[derive(
@@ -14,7 +15,8 @@ use serde::{ Deserialize, Serialize };
     Ord,
     Default,
     JsonSchema,
-    ApiComponent
+    ApiComponent,
+    ToSchema
 )]
 pub struct Movie {
     pub id: Uuid,
@@ -37,7 +39,8 @@ pub struct Movie {
     Ord,
     Default,
     JsonSchema,
-    ApiComponent
+    ApiComponent,
+    ToSchema
 )]
 pub struct CreateMovieRequest {
     pub title: String,
@@ -57,7 +60,8 @@ pub struct CreateMovieRequest {
     Ord,
     Default,
     JsonSchema,
-    ApiComponent
+    ApiComponent,
+    ToSchema
 )]
 pub struct UpdateMovieRequest {
     pub id: Uuid,

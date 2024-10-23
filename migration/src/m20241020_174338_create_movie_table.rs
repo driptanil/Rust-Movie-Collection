@@ -10,7 +10,13 @@ impl MigrationTrait for Migration {
             Table::create()
                 .table(Movie::Table)
                 .if_not_exists()
-                .col(ColumnDef::new(Movie::Id).uuid().not_null().primary_key())
+                .col(
+                    ColumnDef::new(Movie::Id)
+                        .uuid()
+                        .not_null()
+                        .primary_key()
+                        .default(Expr::cust("uuid_generate_v4()"))
+                )
                 .col(ColumnDef::new(Movie::Title).string().not_null())
                 .col(ColumnDef::new(Movie::Director).string().not_null())
                 .col(ColumnDef::new(Movie::Year).small_integer().not_null())
@@ -27,6 +33,8 @@ impl MigrationTrait for Migration {
                 )
                 .to_owned()
         ).await
+
+        // ALTER TABLE public.movie ALTER COLUMN id SET DEFAULT uuid_generate_v4();
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
