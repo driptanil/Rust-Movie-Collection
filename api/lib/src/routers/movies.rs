@@ -13,6 +13,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .service(get_all)
             .service(get_by_id)
             .service(post)
+            .service(bulk_post)
             .service(put)
             .service(delete)
     );
@@ -59,6 +60,24 @@ async fn post(request: web::Json<CreateMovieRequest>, repo: Repository) -> HttpR
     tracing::info!("Creating a new movie");
 
     match repo.create_movie(request.clone()).await {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(e) => {
+            tracing::error!("Database error occurred: {:?}", e);
+            HttpResponse::InternalServerError().body(format!("Failed to create movie: {}", e))
+        }
+    }
+}
+
+#[utoipa::path(
+    context_path = "/api/movies",
+    responses((status = 200, description = "Bulk Create Movie", body = Movie)),
+    tag = "Movie"
+)]
+#[post("/bulk")]
+async fn bulk_post(request: web::Json<Vec<CreateMovieRequest>>, repo: Repository) -> HttpResponse {
+    tracing::info!("Creating bulk movies");
+
+    match repo.bulk_create_movie(request.clone()).await {
         Ok(data) => HttpResponse::Ok().json(data),
         Err(e) => {
             tracing::error!("Database error occurred: {:?}", e);

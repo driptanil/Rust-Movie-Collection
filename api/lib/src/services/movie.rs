@@ -69,7 +69,7 @@ impl MovieRepository for PostgresRepository {
         })
     }
 
-    async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> MovieResult<Vec<Movie>> {
+    async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> MovieResult<bool> {
         let mut active_models: Vec<movie::ActiveModel> = Vec::with_capacity(movies.len());
 
         for movie in movies {
@@ -83,29 +83,12 @@ impl MovieRepository for PostgresRepository {
             active_models.push(new_movie);
         }
 
-        let inserted_movies = movie::Entity
+        movie::Entity
             ::insert_many(active_models)
             .exec_with_returning(&self.pool).await
             .map_err(|e| e.to_string())?;
 
-        // let movies_result: Vec<Movie> = inserted_movies
-        //     .into_iter()
-        //     .map(|inserted_movie| {
-        //         Movie {
-        //             id: inserted_movie.id,
-        //             title: inserted_movie.title,
-        //             director: inserted_movie.director,
-        //             year: inserted_movie.year,
-        //             poster: inserted_movie.poster,
-        //             created_at: inserted_movie.created_at,
-        //             updated_at: inserted_movie.updated_at,
-        //         }
-        //     })
-        //     .collect();
-
-        let movies_result: Vec<Movie> = Vec::new();
-
-        Ok(movies_result)
+        Ok(true)
     }
 
     async fn update_movie(&self, movie: UpdateMovieRequest) -> MovieResult<Movie> {

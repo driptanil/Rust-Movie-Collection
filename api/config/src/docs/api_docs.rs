@@ -10,6 +10,7 @@ use api_lib::routers;
         routers::movies::get_all,
         routers::movies::get_by_id,
         routers::movies::post,
+        routers::movies::bulk_post,
         routers::movies::put,
         routers::movies::delete
     ),
