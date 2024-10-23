@@ -1,4 +1,5 @@
 use sea_orm_migration::prelude::*;
+use sea_orm_migration::sea_orm::Statement;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -6,6 +7,7 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // First, create the table
         manager.create_table(
             Table::create()
                 .table(Movie::Table)
@@ -25,20 +27,73 @@ impl MigrationTrait for Migration {
                     ColumnDef::new(Movie::CreatedAt)
                         .timestamp_with_time_zone()
                         .default(Expr::current_timestamp())
+                        .not_null()
                 )
                 .col(
                     ColumnDef::new(Movie::UpdatedAt)
                         .timestamp_with_time_zone()
                         .default(Expr::current_timestamp())
+                        .not_null()
                 )
                 .to_owned()
-        ).await
+        ).await?;
 
-        // ALTER TABLE public.movie ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+        // Create the function separately
+        let create_function_stmt = Statement::from_string(
+            manager.get_database_backend(),
+            r#"
+            CREATE OR REPLACE FUNCTION update_updated_at_column()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+            END;
+            $$ language 'plpgsql';
+            "#.to_owned()
+        );
+
+        manager.get_connection().execute(create_function_stmt).await?;
+
+        // Create the trigger separately
+        let create_trigger_stmt = Statement::from_string(
+            manager.get_database_backend(),
+            r#"
+            CREATE TRIGGER update_movie_updated_at
+            BEFORE UPDATE
+            ON movie
+            FOR EACH ROW
+            EXECUTE FUNCTION update_updated_at_column();
+            "#.to_owned()
+        );
+
+        manager.get_connection().execute(create_trigger_stmt).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager.drop_table(Table::drop().table(Movie::Table).to_owned()).await
+        // Drop trigger separately
+        let drop_trigger_stmt = Statement::from_string(
+            manager.get_database_backend(),
+            r#"
+            DROP TRIGGER IF EXISTS update_movie_updated_at ON movie;
+            "#.to_owned()
+        );
+        manager.get_connection().execute(drop_trigger_stmt).await?;
+
+        // Drop function separately
+        let drop_function_stmt = Statement::from_string(
+            manager.get_database_backend(),
+            r#"
+            DROP FUNCTION IF EXISTS update_updated_at_column;
+            "#.to_owned()
+        );
+        manager.get_connection().execute(drop_function_stmt).await?;
+
+        // Drop table
+        manager.drop_table(Table::drop().table(Movie::Table).to_owned()).await?;
+
+        Ok(())
     }
 }
 
