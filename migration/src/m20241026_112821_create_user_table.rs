@@ -9,27 +9,27 @@ impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.create_table(
             Table::create()
-                .table(Movie::Table)
+                .table(User::Table)
                 .if_not_exists()
                 .col(
-                    ColumnDef::new(Movie::Id)
+                    ColumnDef::new(User::Id)
                         .uuid()
                         .not_null()
                         .primary_key()
                         .default(Expr::cust("uuid_generate_v4()"))
                 )
-                .col(ColumnDef::new(Movie::Title).string().not_null())
-                .col(ColumnDef::new(Movie::Director).string().not_null())
-                .col(ColumnDef::new(Movie::Year).small_integer().not_null())
-                .col(ColumnDef::new(Movie::Poster).string().null())
+                .col(ColumnDef::new(User::Name).string().not_null())
+                .col(ColumnDef::new(User::Email).string().not_null())
+                .col(ColumnDef::new(User::EmailVerified).timestamp_with_time_zone().null())
+                .col(ColumnDef::new(User::Image).string().null())
                 .col(
-                    ColumnDef::new(Movie::CreatedAt)
+                    ColumnDef::new(User::CreatedAt)
                         .timestamp_with_time_zone()
                         .default(Expr::current_timestamp())
                         .not_null()
                 )
                 .col(
-                    ColumnDef::new(Movie::UpdatedAt)
+                    ColumnDef::new(User::UpdatedAt)
                         .timestamp_with_time_zone()
                         .default(Expr::current_timestamp())
                         .not_null()
@@ -40,9 +40,9 @@ impl MigrationTrait for Migration {
         let create_trigger_stmt = Statement::from_string(
             manager.get_database_backend(),
             r#"
-            CREATE TRIGGER update_movie_updated_at
+            CREATE TRIGGER update_user_updated_at
             BEFORE UPDATE
-            ON movie
+            ON "user"
             FOR EACH ROW
             EXECUTE FUNCTION update_updated_at_column();
             "#.to_owned()
@@ -58,26 +58,26 @@ impl MigrationTrait for Migration {
         let drop_trigger_stmt = Statement::from_string(
             manager.get_database_backend(),
             r#"
-            DROP TRIGGER IF EXISTS update_movie_updated_at ON movie;
+            DROP TRIGGER IF EXISTS update_user_updated_at ON "user";
             "#.to_owned()
         );
         manager.get_connection().execute(drop_trigger_stmt).await?;
 
         // Drop table
-        manager.drop_table(Table::drop().table(Movie::Table).to_owned()).await?;
+        manager.drop_table(Table::drop().table(User::Table).to_owned()).await?;
 
         Ok(())
     }
 }
 
 #[derive(Iden)]
-enum Movie {
+enum User {
     Table,
     Id,
-    Title,
-    Director,
-    Year,
-    Poster,
+    Name,
+    Email,
+    EmailVerified,
+    Image,
     CreatedAt,
     UpdatedAt,
 }
