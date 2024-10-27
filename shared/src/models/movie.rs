@@ -19,13 +19,16 @@ use serde::{ Deserialize, Serialize };
     ToSchema
 )]
 pub struct Movie {
+    #[schema(value_type = String, format = "uuid")]
     pub id: Uuid,
     pub title: String,
     pub director: String,
     pub year: i16,
     pub poster: Option<String>,
-    pub created_at: Option<DateTimeWithTimeZone>,
-    pub updated_at: Option<DateTimeWithTimeZone>,
+    #[schema(value_type = String, format = "datetime-utc")]
+    pub created_at: DateTimeWithTimeZone,
+    #[schema(value_type = String, format = "datetime-utc")]
+    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(
@@ -64,6 +67,7 @@ pub struct CreateMovieRequest {
     ToSchema
 )]
 pub struct UpdateMovieRequest {
+    #[schema(value_type = String, format = "uuid")]
     pub id: Uuid,
     pub title: String,
     pub director: String,

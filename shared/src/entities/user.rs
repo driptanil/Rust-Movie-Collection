@@ -3,19 +3,28 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "movie")]
+#[sea_orm(table_name = "user")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub title: String,
-    pub director: String,
-    pub year: i16,
-    pub poster: Option<String>,
+    pub name: String,
+    pub email: String,
+    pub email_verified: Option<DateTimeWithTimeZone>,
+    pub image: Option<String>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "super::user_password::Entity")]
+    UserPassword,
+}
+
+impl Related<super::user_password::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserPassword.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}
