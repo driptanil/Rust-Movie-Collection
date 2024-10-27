@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod test {
     use actix_web::{ http::StatusCode, App };
-    use api_lib::services::health::{ get_health, API_VERSION };
-    use api_lib::routers::health::router;
+    use api_lib::services::health_service::{ get_health, API_VERSION };
+    use api_lib::routers::health_router::router;
 
     #[actix_rt::test]
     async fn health_check_works() {

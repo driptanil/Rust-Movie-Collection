@@ -3,7 +3,7 @@ use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sea_orm::{ Database, DatabaseConnection };
 use api_lib::{
-    db::postgres::PostgresRepository,
+    db::postgres::PostgresConnection,
     repositories::AppRepository,
     routers::init_routes,
 };
@@ -21,7 +21,7 @@ async fn actix_web(
 
     check_db_connection(&db).await.map_err(CustomError::new)?;
 
-    let repo: Box<dyn AppRepository> = Box::new(PostgresRepository::new(db));
+    let repo: Box<dyn AppRepository> = Box::new(PostgresConnection::new(db));
     let repo = web::Data::new(repo);
 
     let config = move |cfg: &mut web::ServiceConfig| {

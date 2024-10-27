@@ -1,25 +1,25 @@
 use actix_web::{ get, HttpResponse, Responder };
 use utoipa::OpenApi;
-use shared::models;
-use api_lib::routers;
+use shared::models::{ version, movie };
+use api_lib::routers::{ version_router, movies_router };
 
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        routers::version::get,
-        routers::movies::get_all,
-        routers::movies::get_by_id,
-        routers::movies::post,
-        routers::movies::bulk_post,
-        routers::movies::put,
-        routers::movies::delete
+        version_router::get,
+        movies_router::get_all,
+        movies_router::get_by_id,
+        movies_router::post,
+        movies_router::bulk_post,
+        movies_router::put,
+        movies_router::delete
     ),
     components(
         schemas(
-            models::version::Version,
-            models::movie::Movie,
-            models::movie::CreateMovieRequest,
-            models::movie::UpdateMovieRequest
+            version::Version,
+            movie::Movie,
+            movie::CreateMovieRequest,
+            movie::UpdateMovieRequest
         )
     ),
     tags(

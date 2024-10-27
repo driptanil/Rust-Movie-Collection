@@ -1,13 +1,23 @@
 use sea_orm::{ prelude::Uuid, EntityTrait, ActiveModelTrait, ModelTrait, Set };
 use shared::{ entities::movie, models::movie::{ CreateMovieRequest, Movie, UpdateMovieRequest } };
-use crate::{
-    db::postgres::PostgresRepository,
-    repositories::movie::{ MovieRepository, RepoResult as MovieResult },
-};
+use crate::db::postgres::PostgresConnection;
+
+pub type RepoError = String;
+pub type RepoResult<T> = Result<T, RepoError>;
 
 #[async_trait::async_trait]
-impl MovieRepository for PostgresRepository {
-    async fn get_movies(&self) -> MovieResult<Vec<Movie>> {
+pub trait MovieRepository: Send + Sync + 'static {
+    async fn get_movies(&self) -> RepoResult<Vec<Movie>>;
+    async fn get_movie(&self, movie_id: Uuid) -> RepoResult<Movie>;
+    async fn create_movie(&self, movie: CreateMovieRequest) -> RepoResult<Movie>;
+    async fn bulk_create_movie(&self, movie: Vec<CreateMovieRequest>) -> RepoResult<bool>;
+    async fn update_movie(&self, movie: UpdateMovieRequest) -> RepoResult<Movie>;
+    async fn delete_movie(&self, movie_id: Uuid) -> RepoResult<Uuid>;
+}
+
+#[async_trait::async_trait]
+impl MovieRepository for PostgresConnection {
+    async fn get_movies(&self) -> RepoResult<Vec<Movie>> {
         let response = movie::Entity
             ::find()
             .all(&self.pool).await
@@ -29,7 +39,7 @@ impl MovieRepository for PostgresRepository {
         Ok(movies)
     }
 
-    async fn get_movie(&self, movie_id: Uuid) -> MovieResult<Movie> {
+    async fn get_movie(&self, movie_id: Uuid) -> RepoResult<Movie> {
         let response = movie::Entity
             ::find_by_id(movie_id)
             .one(&self.pool).await
@@ -47,7 +57,7 @@ impl MovieRepository for PostgresRepository {
         })
     }
 
-    async fn create_movie(&self, movie: CreateMovieRequest) -> MovieResult<Movie> {
+    async fn create_movie(&self, movie: CreateMovieRequest) -> RepoResult<Movie> {
         let new_movie = movie::ActiveModel {
             title: Set(movie.title),
             director: Set(movie.director),
@@ -69,7 +79,7 @@ impl MovieRepository for PostgresRepository {
         })
     }
 
-    async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> MovieResult<bool> {
+    async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> RepoResult<bool> {
         let mut active_models: Vec<movie::ActiveModel> = Vec::with_capacity(movies.len());
 
         for movie in movies {
@@ -91,7 +101,7 @@ impl MovieRepository for PostgresRepository {
         Ok(true)
     }
 
-    async fn update_movie(&self, movie: UpdateMovieRequest) -> MovieResult<Movie> {
+    async fn update_movie(&self, movie: UpdateMovieRequest) -> RepoResult<Movie> {
         let movie_to_update = movie::Entity
             ::find_by_id(movie.id)
             .one(&self.pool).await
@@ -117,7 +127,7 @@ impl MovieRepository for PostgresRepository {
         })
     }
 
-    async fn delete_movie(&self, movie_id: Uuid) -> MovieResult<Uuid> {
+    async fn delete_movie(&self, movie_id: Uuid) -> RepoResult<Uuid> {
         let movie_to_delete = movie::Entity
             ::find_by_id(movie_id)
             .one(&self.pool).await

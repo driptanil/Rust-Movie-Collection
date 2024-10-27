@@ -71,7 +71,7 @@ mod test {
     async fn test_get_all_movies() {
         let app = App::new()
             .app_data(web::Data::<Box<dyn MovieRepository>>::new(Box::new(MockRepository)))
-            .configure(service::<api_lib::db::postgres::PostgresRepository>); // Ensure this is properly configured
+            .configure(service::<api_lib::db::postgres::PostgresConnection>); // Ensure this is properly configured
 
         let mut app = test::init_service(app).await;
 
@@ -88,7 +88,7 @@ mod test {
     // async fn test_get_movie_by_id() {
     //     let app = App::new()
     //         .app_data(web::Data::<Box<dyn MovieRepository>>::new(Box::new(MockRepository)))
-    //         .configure(service::<api_lib::db::postgres::PostgresRepository>);
+    //         .configure(service::<api_lib::db::postgres::PostgresConnection>);
 
     //     let movie_id = Uuid::new_v4();
     //     let mut app = test::init_service(app).await;
@@ -106,7 +106,7 @@ mod test {
     // async fn test_create_movie() {
     //     let app = App::new()
     //         .app_data(web::Data::<Box<dyn MovieRepository>>::new(Box::new(MockRepository)))
-    //         .configure(service::<api_lib::db::postgres::PostgresRepository>);
+    //         .configure(service::<api_lib::db::postgres::PostgresConnection>);
 
     //     let mut app = test::init_service(app).await;
     //     let new_movie = CreateMovieRequest {
@@ -132,7 +132,7 @@ mod test {
     // async fn test_update_movie() {
     //     let app = App::new()
     //         .app_data(web::Data::<Box<dyn MovieRepository>>::new(Box::new(MockRepository)))
-    //         .configure(service::<api_lib::db::postgres::PostgresRepository>);
+    //         .configure(service::<api_lib::db::postgres::PostgresConnection>);
 
     //     let mut app = test::init_service(app).await;
     //     let update_request = UpdateMovieRequest {
@@ -159,7 +159,7 @@ mod test {
     // async fn test_delete_movie() {
     //     let app = App::new()
     //         .app_data(web::Data::<Box<dyn MovieRepository>>::new(Box::new(MockRepository)))
-    //         .configure(service::<api_lib::db::postgres::PostgresRepository>);
+    //         .configure(service::<api_lib::db::postgres::PostgresConnection>);
 
     //     let movie_id = Uuid::new_v4();
     //     let mut app = test::init_service(app).await;

@@ -1,13 +1,18 @@
 use sea_orm::{ ConnectionTrait, Statement };
 use shared::models::version::Version;
 
-use crate::{
-    db::postgres::PostgresRepository,
-    repositories::version::{ VersionRepository, VersionResult },
-};
+use crate::db::postgres::PostgresConnection;
+
+pub type VersionError = String;
+pub type VersionResult<T> = Result<T, VersionError>;
 
 #[async_trait::async_trait]
-impl VersionRepository for PostgresRepository {
+pub trait VersionRepository: Send + Sync + 'static {
+    async fn get_version(&self) -> VersionResult<Version>;
+}
+
+#[async_trait::async_trait]
+impl VersionRepository for PostgresConnection {
     async fn get_version(&self) -> VersionResult<Version> {
         let raw_sql = Statement::from_string(
             self.pool.get_database_backend(),
