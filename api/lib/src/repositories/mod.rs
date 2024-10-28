@@ -1,5 +1,4 @@
 use actix_web::web;
-use base_repository::BaseRepository;
 use movie_repository::MovieRepository;
 use version_repository::VersionRepository;
 
@@ -11,12 +10,7 @@ pub mod version_repository;
 
 pub type Repository = web::Data<Box<dyn AppRepository>>;
 
-pub trait AppRepository: BaseRepository +
-    VersionRepository +
-    MovieRepository +
-    Send +
-    Sync +
-    'static {}
+pub trait AppRepository: VersionRepository + MovieRepository + Send + Sync + 'static {}
 
 impl AppRepository for PostgresConnection {}
 
