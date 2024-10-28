@@ -1,9 +1,10 @@
 use actix_web::{ get, web, HttpResponse };
 use shared::models::version::Version;
-use crate::repositories::AppRepository;
+use crate::{
+    repositories::Repository,
+    services::version_service::{ VersionService, VersionServiceImpl },
+};
 use serde_json::json;
-
-type Repository = web::Data<Box<dyn AppRepository>>;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(web::scope("/version").service(get));
@@ -25,9 +26,10 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 pub async fn get(repo: Repository) -> HttpResponse {
     tracing::info!("Getting version");
 
-    match repo.get_version().await {
+    let service = VersionServiceImpl::new(repo);
+
+    match service.get_version().await {
         Ok(data) => {
-            // Serialize the Version struct into JSON
             match serde_json::to_string(&data) {
                 Ok(json_response) =>
                     HttpResponse::Ok().content_type("application/json").body(json_response),
@@ -35,7 +37,6 @@ pub async fn get(repo: Repository) -> HttpResponse {
             }
         }
         Err(e) => {
-            // Create a JSON error response
             let error_response = json!({ "error": e });
             HttpResponse::InternalServerError()
                 .content_type("application/json")

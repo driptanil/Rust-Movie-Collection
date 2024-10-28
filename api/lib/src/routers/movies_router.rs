@@ -2,9 +2,7 @@ use actix_web::{ get, post, put, delete, web, HttpResponse };
 use sea_orm::prelude::Uuid;
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
 
-use crate::repositories::AppRepository;
-
-type Repository = web::Data<Box<dyn AppRepository>>;
+use crate::repositories::Repository;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(

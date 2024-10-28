@@ -1,5 +1,4 @@
 use sea_orm::{ ConnectionTrait, Statement };
-use shared::models::version::Version;
 
 use crate::db::postgres::PostgresConnection;
 
@@ -8,12 +7,12 @@ pub type VersionResult<T> = Result<T, VersionError>;
 
 #[async_trait::async_trait]
 pub trait VersionRepository: Send + Sync + 'static {
-    async fn get_version(&self) -> VersionResult<Version>;
+    async fn get_db_version(&self) -> VersionResult<String>;
 }
 
 #[async_trait::async_trait]
 impl VersionRepository for PostgresConnection {
-    async fn get_version(&self) -> VersionResult<Version> {
+    async fn get_db_version(&self) -> VersionResult<String> {
         let raw_sql = Statement::from_string(
             self.pool.get_database_backend(),
             "SELECT version()".to_string()
@@ -25,7 +24,7 @@ impl VersionRepository for PostgresConnection {
         match result {
             Ok(Some(row)) => {
                 let version: String = row.try_get("", "version").map_err(|e| e.to_string())?;
-                Ok(Version { db: version })
+                Ok(version)
             }
             Ok(None) => Err("No version found".to_string()),
             Err(e) => Err(e.to_string()),

@@ -1,12 +1,22 @@
+use actix_web::web;
+use base_repository::BaseRepository;
 use movie_repository::MovieRepository;
 use version_repository::VersionRepository;
 
 use crate::db::postgres::PostgresConnection;
 
+pub mod base_repository;
 pub mod movie_repository;
 pub mod version_repository;
 
-pub trait AppRepository: VersionRepository + MovieRepository + Send + Sync + 'static {}
+pub type Repository = web::Data<Box<dyn AppRepository>>;
+
+pub trait AppRepository: BaseRepository +
+    VersionRepository +
+    MovieRepository +
+    Send +
+    Sync +
+    'static {}
 
 impl AppRepository for PostgresConnection {}
 
