@@ -378,8 +378,10 @@ dependencies = [
  "actix-web",
  "async-trait",
  "sea-orm",
+ "serde",
  "serde_json",
  "shared",
+ "thiserror",
  "tracing",
  "utoipa 3.0.2",
 ]

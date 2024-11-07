@@ -3,9 +3,8 @@ use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sea_orm::{ Database, DatabaseConnection };
 use api_lib::{
-    db::postgres::PostgresConnection,
     repositories::AppRepository,
-    routers::init_routes,
+    routers::init_routes, services::movie_service::MovieServiceImpl,
 };
 use sea_orm::entity::prelude::*;
 
@@ -21,8 +20,14 @@ async fn actix_web(
 
     check_db_connection(&db).await.map_err(CustomError::new)?;
 
-    let repo: Box<dyn AppRepository> = Box::new(PostgresConnection::new(db));
-    let repo = web::Data::new(repo);
+    let repo: Box<dyn AppRepository> = Box::new(db);
+    // let repo = web::Data::new(repo);
+
+      // Initialize MovieServiceImpl with the boxed repository
+    let movie_service = MovieServiceImpl::new(repo);
+
+    // Register the service with Actix as shared data
+    let movie_service_data = web::Data::new(movie_service);
 
     let config = move |cfg: &mut web::ServiceConfig| {
         cfg.app_data(repo.clone()).configure(init_routes).configure(init_docs);

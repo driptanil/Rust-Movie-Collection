@@ -14,7 +14,11 @@ tracing = "0.1"
 actix-rt = "2.5.0"
 async-trait = "0.1.83"
 shared = { path = "../../shared" }
+serde = { version = "1.0", features = ["derive"] }
 
 # docs
 serde_json = "1.0.70"
 utoipa = { version = "= 3.0.2", features = ["actix_extras"] }
+
+# error
+thiserror = "1.0.29"   

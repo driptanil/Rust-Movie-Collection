@@ -1,8 +1,6 @@
 use actix_web::web;
 use movie_repository::MovieRepository;
-use version_repository::VersionRepository;
-
-use crate::db::postgres::PostgresConnection;
+use sea_orm::DatabaseConnection;
 
 pub mod base_repository;
 pub mod movie_repository;
@@ -10,9 +8,9 @@ pub mod version_repository;
 
 pub type Repository = web::Data<Box<dyn AppRepository>>;
 
-pub trait AppRepository: VersionRepository + MovieRepository + Send + Sync + 'static {}
+pub trait AppRepository: MovieRepository + Send + Sync + 'static {}
 
-impl AppRepository for PostgresConnection {}
+impl AppRepository for DatabaseConnection {}
 
 // #[async_trait::async_trait]
 // pub trait Repository<C, R, U, D>: Send + Sync + 'static {

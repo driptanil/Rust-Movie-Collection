@@ -2,7 +2,9 @@ use actix_web::{ get, post, put, delete, web, HttpResponse };
 use sea_orm::prelude::Uuid;
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
 
-use crate::repositories::Repository;
+use crate::{ services::movie_service::MovieService, utils::error::ApiResult };
+
+type Service = web::Data<Box<dyn MovieService>>;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -23,12 +25,12 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     tag = "Movie"
 )]
 #[get("")]
-pub async fn get_all(repo: Repository) -> HttpResponse {
+pub async fn get_all(service: Service) -> ApiResult<HttpResponse> {
     tracing::info!("Getting all movies");
 
-    match repo.get_movies().await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => HttpResponse::InternalServerError().body(e),
+    match service.get_movies().await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
     }
 }
 
@@ -39,12 +41,12 @@ pub async fn get_all(repo: Repository) -> HttpResponse {
     tag = "Movie"
 )]
 #[get("/{movie_id}")]
-pub async fn get_by_id(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
+pub async fn get_by_id(movie_id: web::Path<Uuid>, service: Service) -> ApiResult<HttpResponse> {
     tracing::info!("Getting movie by id");
 
-    match repo.get_movie(*movie_id).await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => HttpResponse::InternalServerError().body(e),
+    match service.get_movie(*movie_id).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
     }
 }
 
@@ -54,15 +56,12 @@ pub async fn get_by_id(movie_id: web::Path<Uuid>, repo: Repository) -> HttpRespo
     tag = "Movie"
 )]
 #[post("")]
-async fn post(request: web::Json<CreateMovieRequest>, repo: Repository) -> HttpResponse {
+async fn post(request: web::Json<CreateMovieRequest>, service: Service) -> ApiResult<HttpResponse> {
     tracing::info!("Creating a new movie");
 
-    match repo.create_movie(request.clone()).await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => {
-            tracing::error!("Database error occurred: {:?}", e);
-            HttpResponse::InternalServerError().body(format!("Failed to create movie: {}", e))
-        }
+    match service.create_movie(request.clone()).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
     }
 }
 
@@ -72,16 +71,21 @@ async fn post(request: web::Json<CreateMovieRequest>, repo: Repository) -> HttpR
     tag = "Movie"
 )]
 #[post("/bulk")]
-async fn bulk_post(request: web::Json<Vec<CreateMovieRequest>>, repo: Repository) -> HttpResponse {
+async fn bulk_post(
+    request: web::Json<Vec<CreateMovieRequest>>,
+    service: Service
+) -> ApiResult<HttpResponse> {
     tracing::info!("Creating bulk movies");
 
-    match repo.bulk_create_movie(request.clone()).await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => {
-            tracing::error!("Database error occurred: {:?}", e);
-            HttpResponse::InternalServerError().body(format!("Failed to create movie: {}", e))
-        }
-    }
+    todo!()
+
+    // match service.bulk_create_movie(request.clone()).await {
+    //     Ok(data) => HttpResponse::Ok().json(data),
+    //     Err(e) => {
+    //         tracing::error!("Database error occurred: {:?}", e);
+    //         HttpResponse::InternalServerError().body(format!("Failed to create movie: {}", e))
+    //     }
+    // }
 }
 
 #[utoipa::path(
@@ -90,12 +94,12 @@ async fn bulk_post(request: web::Json<Vec<CreateMovieRequest>>, repo: Repository
     tag = "Movie"
 )]
 #[put("")]
-async fn put(request: web::Json<UpdateMovieRequest>, repo: Repository) -> HttpResponse {
+async fn put(request: web::Json<UpdateMovieRequest>, service: Service) -> ApiResult<HttpResponse> {
     tracing::info!("Updating a movie");
 
-    match repo.update_movie(request.clone()).await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => HttpResponse::InternalServerError().body(e),
+    match service.update_movie(request.clone()).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
     }
 }
 
@@ -106,11 +110,11 @@ async fn put(request: web::Json<UpdateMovieRequest>, repo: Repository) -> HttpRe
     tag = "Movie"
 )]
 #[delete("/{movie_id}")]
-async fn delete(movie_id: web::Path<Uuid>, repo: Repository) -> HttpResponse {
+async fn delete(movie_id: web::Path<Uuid>, service: Service) -> ApiResult<HttpResponse> {
     tracing::info!("Deleting a movie");
 
-    match repo.delete_movie(*movie_id).await {
-        Ok(data) => HttpResponse::Ok().json(data),
-        Err(e) => HttpResponse::InternalServerError().body(e),
+    match service.delete_movie(*movie_id).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
     }
 }

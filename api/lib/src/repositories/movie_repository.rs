@@ -1,6 +1,12 @@
-use sea_orm::{ prelude::Uuid, ActiveModelTrait, DbErr, EntityTrait, ModelTrait };
+use sea_orm::{
+    prelude::Uuid,
+    ActiveModelTrait,
+    DatabaseConnection,
+    DbErr,
+    EntityTrait,
+    ModelTrait,
+};
 use shared::entities::movie;
-use crate::db::postgres::PostgresConnection;
 
 pub type RepoError = String;
 pub type RepoResult<T> = Result<T, DbErr>;
@@ -16,17 +22,17 @@ pub trait MovieRepository: Send + Sync + 'static {
 }
 
 #[async_trait::async_trait]
-impl MovieRepository for PostgresConnection {
+impl MovieRepository for DatabaseConnection {
     async fn get_movies(&self) -> RepoResult<Vec<movie::Model>> {
-        movie::Entity::find().all(&self.pool).await
+        movie::Entity::find().all(self).await
     }
 
     async fn get_movie(&self, movie_id: Uuid) -> RepoResult<Option<movie::Model>> {
-        movie::Entity::find_by_id(movie_id).one(&self.pool).await
+        movie::Entity::find_by_id(movie_id).one(self).await
     }
 
     async fn create_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model> {
-        movie.insert(&self.pool).await
+        movie.insert(self).await
     }
 
     // async fn bulk_create_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool> {
@@ -45,22 +51,25 @@ impl MovieRepository for PostgresConnection {
 
     //     movie::Entity
     //         ::insert_many(active_models)
-    //         .exec_with_returning(&self.pool).await
+    //         .exec_with_returning(&self).await
     //         .map_err(|e| e.to_string())?;
 
     //     Ok(true)
     // }
 
     async fn update_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model> {
-        movie.update(&self.pool).await
+        movie.update(self).await
     }
 
     async fn delete_movie(&self, movie_id: Uuid) -> RepoResult<Uuid> {
-        let movie_to_delete = movie::Entity::find_by_id(movie_id).one(&self.pool).await;
+        let movie_to_delete = movie::Entity::find_by_id(movie_id).one(self).await;
 
         match movie_to_delete {
             Ok(movie) => {
-                return movie.expect("Movie not found").delete(&self.pool).await.map(|_| movie_id.to_owned());
+                return movie
+                    .expect("Movie not found")
+                    .delete(self).await
+                    .map(|_| movie_id.to_owned());
             }
             Err(e) => {
                 return Err(e);

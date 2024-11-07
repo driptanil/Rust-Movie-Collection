@@ -6,7 +6,7 @@ use api_lib::routers::{ version_router, movies_router };
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        version_router::get,
+        // version_router::get,
         movies_router::get_all,
         movies_router::get_by_id,
         movies_router::post,
@@ -16,7 +16,7 @@ use api_lib::routers::{ version_router, movies_router };
     ),
     components(
         schemas(
-            version::Version,
+            // version::Version,
             movie::Movie,
             movie::CreateMovieRequest,
             movie::UpdateMovieRequest
