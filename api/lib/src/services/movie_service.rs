@@ -1,5 +1,6 @@
 use shared::models::movie::{ CreateMovieRequest, Movie, UpdateMovieRequest };
 use sea_orm::prelude::Uuid;
+use std::sync::Arc;
 use crate::{
     repositories::movie_repository::MovieRepository,
     utils::error::{ ApiError, ApiResult },
@@ -15,18 +16,19 @@ pub trait MovieService: Send + Sync + 'static {
     async fn delete_movie(&self, movie_id: Uuid) -> ApiResult<Uuid>;
 }
 
-pub struct MovieServiceImpl<R: MovieRepository> {
-    repo: R,
+
+pub struct MovieServiceImpl {
+    repo: Arc<dyn MovieRepository>,
 }
 
-impl<R: MovieRepository> MovieServiceImpl<R> {
-    pub fn new(repo: R) -> Self {
+impl MovieServiceImpl {
+    pub fn new(repo: Arc<dyn MovieRepository>) -> Self {
         Self { repo }
     }
 }
 
 #[async_trait::async_trait]
-impl<R: MovieRepository> MovieService for MovieServiceImpl<R> {
+impl MovieService for MovieServiceImpl {
     async fn get_movies(&self) -> ApiResult<Vec<Movie>> {
         let response = self.repo
             .get_movies().await

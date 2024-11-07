@@ -1,10 +1,9 @@
 use actix_web::{ get, post, put, delete, web, HttpResponse };
 use sea_orm::prelude::Uuid;
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
+use crate::{ services::movie_service::{MovieService, MovieServiceImpl}, utils::error::ApiResult };
 
-use crate::{ services::movie_service::MovieService, utils::error::ApiResult };
-
-type Service = web::Data<Box<dyn MovieService>>;
+type Service = web::Data<MovieServiceImpl>;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(

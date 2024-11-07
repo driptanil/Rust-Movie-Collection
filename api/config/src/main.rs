@@ -1,15 +1,14 @@
 use actix_web::web;
+use drip_rust_movie_collection::docs::init_docs;
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sea_orm::{ Database, DatabaseConnection };
 use api_lib::{
-    repositories::AppRepository,
+    repositories::movie_repository::MovieRepository,
     routers::init_routes, services::movie_service::MovieServiceImpl,
 };
 use sea_orm::entity::prelude::*;
-
-mod docs;
-use docs::init_docs;
+use std::sync::Arc;
 
 #[shuttle_runtime::main]
 async fn actix_web(
@@ -20,17 +19,14 @@ async fn actix_web(
 
     check_db_connection(&db).await.map_err(CustomError::new)?;
 
-    let repo: Box<dyn AppRepository> = Box::new(db);
-    // let repo = web::Data::new(repo);
-
-      // Initialize MovieServiceImpl with the boxed repository
-    let movie_service = MovieServiceImpl::new(repo);
-
-    // Register the service with Actix as shared data
-    let movie_service_data = web::Data::new(movie_service);
+    // Wrap DatabaseConnection in Arc and pass to MovieServiceImpl
+    let movie_repository = Arc::new(db) as Arc<dyn MovieRepository>;
+    let movie_service = web::Data::new(MovieServiceImpl::new(movie_repository.clone()));
 
     let config = move |cfg: &mut web::ServiceConfig| {
-        cfg.app_data(repo.clone()).configure(init_routes).configure(init_docs);
+        cfg.app_data(movie_service.clone())
+           .configure(init_routes)
+           .configure(init_docs);
     };
 
     Ok(config.into())
