@@ -9,7 +9,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         web
             ::scope("/api")
             // .configure(version_router::init_routes)
-            .configure(movies_router::init_routes)
+            .configure(movies_router::router)
             .configure(health_router::router)
     );
 }

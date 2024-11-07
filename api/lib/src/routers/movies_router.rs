@@ -5,7 +5,7 @@ use crate::{ services::movie_service::{MovieService, MovieServiceImpl}, utils::e
 
 type Service = web::Data<MovieServiceImpl>;
 
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
+pub fn router(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web
             ::scope("/movies")
