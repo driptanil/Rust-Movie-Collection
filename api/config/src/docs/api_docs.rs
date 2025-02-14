@@ -12,6 +12,7 @@ use api_lib::routers::{ version_router, movies_router };
         movies_router::post,
         movies_router::bulk_post,
         movies_router::put,
+        movies_router::bulk_put,
         movies_router::delete
     ),
     components(

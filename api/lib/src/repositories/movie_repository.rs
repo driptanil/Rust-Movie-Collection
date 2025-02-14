@@ -16,8 +16,9 @@ pub trait MovieRepository: Send + Sync + 'static {
     async fn get_movies(&self) -> RepoResult<Vec<movie::Model>>;
     async fn get_movie(&self, movie_id: Uuid) -> RepoResult<Option<movie::Model>>;
     async fn create_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model>;
-    // async fn bulk_create_movie(&self, movie: Vec<CreateMovieRequest>) -> RepoResult<bool>;
+    async fn bulk_create_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool>;
     async fn update_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model>;
+    async fn bulk_update_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool>;
     async fn delete_movie(&self, movie_id: Uuid) -> RepoResult<Uuid>;
 }
 
@@ -32,33 +33,36 @@ impl MovieRepository for DatabaseConnection {
     }
 
     async fn create_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model> {
-        movie.insert(self).await
+        let id: Uuid = movie::Entity::insert(movie).exec(self).await?.last_insert_id;
+
+        let inserted_movie = movie::Entity::find_by_id(id).one(self).await;
+
+        match inserted_movie {
+            Ok(movie) => {
+                return Ok(movie.expect("Movie not found"));
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
     }
 
-    // async fn bulk_create_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool> {
-    //     let mut active_models: Vec<movie::ActiveModel> = Vec::with_capacity(movies.len());
+    async fn bulk_create_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool> {
+        movie::Entity::insert_many(movies).exec(self).await?;
 
-    //     for movie in movies {
-    //         let new_movie = movie::ActiveModel {
-    //             title: Set(movie.title),
-    //             director: Set(movie.director),
-    //             year: Set(movie.year as i16),
-    //             poster: Set(movie.poster),
-    //             ..Default::default()
-    //         };
-    //         active_models.push(new_movie);
-    //     }
-
-    //     movie::Entity
-    //         ::insert_many(active_models)
-    //         .exec_with_returning(&self).await
-    //         .map_err(|e| e.to_string())?;
-
-    //     Ok(true)
-    // }
+        Ok(true)
+    }
 
     async fn update_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model> {
         movie.update(self).await
+    }
+    
+    async fn bulk_update_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool> {
+        for movie in movies {
+            movie.update(self).await?;
+        }
+
+        Ok(true)
     }
 
     async fn delete_movie(&self, movie_id: Uuid) -> RepoResult<Uuid> {

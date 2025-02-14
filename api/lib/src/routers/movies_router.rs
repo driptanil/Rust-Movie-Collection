@@ -14,6 +14,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
             .service(post)
             .service(bulk_post)
             .service(put)
+            .service(bulk_put)
             .service(delete)
     );
 }
@@ -76,15 +77,10 @@ async fn bulk_post(
 ) -> ApiResult<HttpResponse> {
     tracing::info!("Creating bulk movies");
 
-    todo!()
-
-    // match service.bulk_create_movie(request.clone()).await {
-    //     Ok(data) => HttpResponse::Ok().json(data),
-    //     Err(e) => {
-    //         tracing::error!("Database error occurred: {:?}", e);
-    //         HttpResponse::InternalServerError().body(format!("Failed to create movie: {}", e))
-    //     }
-    // }
+    match service.bulk_create_movie(request.clone()).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
+    }
 }
 
 #[utoipa::path(
@@ -97,6 +93,24 @@ async fn put(request: web::Json<UpdateMovieRequest>, service: Service) -> ApiRes
     tracing::info!("Updating a movie");
 
     match service.update_movie(request.clone()).await {
+        Ok(data) => Ok(HttpResponse::Ok().json(data)),
+        Err(e) => Err(e),
+    }
+}
+
+#[utoipa::path(
+    context_path = "/api/movies",
+    responses((status = 200, description = "Bulk Update Movie", body = Movie)),
+    tag = "Movie"
+)]
+#[put("/bulk")]
+async fn bulk_put(
+    request: web::Json<Vec<UpdateMovieRequest>>,
+    service: Service
+) -> ApiResult<HttpResponse> {
+    tracing::info!("Updating bulk movies");
+
+    match service.bulk_update_movie(request.clone()).await {
         Ok(data) => Ok(HttpResponse::Ok().json(data)),
         Err(e) => Err(e),
     }

@@ -1,4 +1,4 @@
-use shared::models::movie::{ CreateMovieRequest, Movie, UpdateMovieRequest };
+use shared::{entities::movie, models::movie::{ CreateMovieRequest, Movie, UpdateMovieRequest }};
 use sea_orm::prelude::Uuid;
 use std::sync::Arc;
 use crate::{
@@ -11,8 +11,9 @@ pub trait MovieService: Send + Sync + 'static {
     async fn get_movies(&self) -> ApiResult<Vec<Movie>>;
     async fn get_movie(&self, movie_id: Uuid) -> ApiResult<Movie>;
     async fn create_movie(&self, movie: CreateMovieRequest) -> ApiResult<Movie>;
-    // async fn bulk_create_movie(&self, movie: Vec<CreateMovieRequest>) -> ApiResult<bool>;
+    async fn bulk_create_movie(&self, movie: Vec<CreateMovieRequest>) -> ApiResult<bool>;
     async fn update_movie(&self, movie: UpdateMovieRequest) -> ApiResult<Movie>;
+    async fn bulk_update_movie(&self, movie: Vec<UpdateMovieRequest>) -> ApiResult<bool>;
     async fn delete_movie(&self, movie_id: Uuid) -> ApiResult<Uuid>;
 }
 
@@ -57,9 +58,15 @@ impl MovieService for MovieServiceImpl {
         Ok(Movie::from_model(inserted_movie))
     }
 
-    // async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> ApiResult<bool> {
-    //     self.repo.bulk_create_movie(self, movies).await
-    // }
+    async fn bulk_create_movie(&self, movies: Vec<CreateMovieRequest>) -> ApiResult<bool> {
+
+        let movies:Vec<movie::ActiveModel> = movies.into_iter().map(|m| m.to_active_model()).collect();
+
+        let inserted_movies = self.repo.bulk_create_movie(movies).await
+            .map_err(|e| { ApiError::InternalServer("Database error ):".to_owned()) })?;
+
+        Ok(inserted_movies)
+    }
 
     async fn update_movie(&self, movie: UpdateMovieRequest) -> ApiResult<Movie> {
         let request = movie.to_active_model();
@@ -71,8 +78,17 @@ impl MovieService for MovieServiceImpl {
         Ok(Movie::from_model(updated_movie))
     }
 
+    async fn bulk_update_movie(&self, movies: Vec<UpdateMovieRequest>) -> ApiResult<bool> {
+        let movies:Vec<movie::ActiveModel> = movies.into_iter().map(|m| m.to_active_model()).collect();
+
+        let updated_movies = self.repo.bulk_update_movie(movies).await
+            .map_err(|e| { ApiError::InternalServer("Database error ):".to_owned()) })?;
+
+        Ok(updated_movies)
+    }
+
     async fn delete_movie(&self, movie_id: Uuid) -> ApiResult<Uuid> {
-        self.repo.delete_movie(movie_id).await.map_err(|e| e.to_string());
+        self.repo.delete_movie(movie_id).await.map_err(|e| { ApiError::InternalServer("Database error ):".to_owned()) })?;
 
         Ok(movie_id)
     }
