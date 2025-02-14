@@ -35,16 +35,9 @@ impl MovieRepository for DatabaseConnection {
     async fn create_movie(&self, movie: movie::ActiveModel) -> RepoResult<movie::Model> {
         let id: Uuid = movie::Entity::insert(movie).exec(self).await?.last_insert_id;
 
-        let inserted_movie = movie::Entity::find_by_id(id).one(self).await;
+        let inserted_movie = movie::Entity::find_by_id(id).one(self).await?;
 
-        match inserted_movie {
-            Ok(movie) => {
-                return Ok(movie.expect("Movie not found"));
-            }
-            Err(e) => {
-                return Err(e);
-            }
-        }
+        Ok(inserted_movie.expect("Movie not found"))
     }
 
     async fn bulk_create_movie(&self, movies: Vec<movie::ActiveModel>) -> RepoResult<bool> {
