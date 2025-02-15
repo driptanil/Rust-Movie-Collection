@@ -46,3 +46,5 @@ ui/.vercel
 # typescript
 *.tsbuildinfo
 ui/next-env.d.ts
+/target
+.shuttle*
