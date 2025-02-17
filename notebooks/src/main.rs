@@ -16,7 +16,7 @@ fn main() {
             // col("listed_in")
             //     .apply(|s| { Ok(s.str()?.str_len_chars()) }, GetOutput::from_type(DataType::UInt32))
             //     .alias("listed_in_exploded"),
-            col("listed_in").cast(DataType::).alias("listed_in_exploded"),
+            // col("listed_in").cast(DataType::).alias("listed_in_exploded"),
         ])
         .collect()
         .unwrap();

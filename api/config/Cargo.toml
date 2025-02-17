@@ -5,13 +5,13 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.3.1"
-shuttle-actix-web = "0.48.0"
-shuttle-runtime = "0.48.0"
+shuttle-actix-web = "0.52.0"
+shuttle-runtime = "0.52.0"
 tokio = "1.26.0"
 tracing = "0.1"
 
 # database
-shuttle-shared-db = { version = "0.48.0", features = ["postgres", "sqlx"] }
+shuttle-shared-db = { version = "0.52.0", features = ["postgres", "sqlx"] }
 sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros", "with-chrono", "with-json", "with-uuid" ] }
 
 # lib
