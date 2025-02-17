@@ -17,6 +17,7 @@ sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-nati
 # lib
 api-lib = { path = "../lib" }
 shared = { path = "../../shared" }
+migration ={ path = "../../migration" }
 
 # docs
 

@@ -1,5 +1,6 @@
 use actix_web::web;
 use drip_rust_movie_collection::docs::init_docs;
+use migration::{Migrator, MigratorTrait};
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sea_orm::Database ;
@@ -15,6 +16,8 @@ async fn actix_web(
 ) -> ShuttleActixWeb<impl FnOnce(&mut web::ServiceConfig) + Send + Clone + 'static> {
     // Initialize SeaORM connection
     let db = Database::connect(&pool).await.map_err(CustomError::new)?;
+
+    Migrator::up(&db, None).await.map_err(CustomError::new)?;
 
     check_db_connection(&db).await.map_err(CustomError::new)?;
 
