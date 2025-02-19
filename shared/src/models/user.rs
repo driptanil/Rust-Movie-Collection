@@ -1,5 +1,5 @@
 use apistos::ApiComponent;
-use sea_orm::{prelude::{ DateTimeWithTimeZone, Uuid }, Set};
+use sea_orm::{ prelude::{ DateTimeWithTimeZone, Uuid }, Set };
 use utoipa::ToSchema;
 use schemars::JsonSchema;
 use serde::{ Deserialize, Serialize };
@@ -61,16 +61,7 @@ pub struct UserClaims {
     expires: i64,
 }
 
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Default,
-    JsonSchema,
-    ApiComponent,
-    ToSchema
-)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]
 pub struct UserToken {
     #[schema(value_type = String, format = "uuid")]
     pub id: Uuid,
@@ -87,31 +78,13 @@ pub struct UserToken {
     pub user_id: Uuid,
 }
 
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Default,
-    JsonSchema,
-    ApiComponent,
-    ToSchema
-)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
 }
 
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Default,
-    JsonSchema,
-    ApiComponent,
-    ToSchema
-)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]
 pub struct CreateUserRequest {
     pub name: String,
     pub email: String,

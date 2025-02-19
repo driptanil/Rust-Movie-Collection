@@ -5,7 +5,7 @@
           "type": "lldb",
           "request": "attach",
           "name": "Attach to Shuttle",
-          "program": "${workspaceFolder}/target/debug/drip-rust-movie-collection"
+          "program": "${workspaceFolder}/target/debug/drip-rust-movie-collection",
       }
   ]
 }
