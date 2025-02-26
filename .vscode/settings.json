@@ -10,5 +10,6 @@
             "name": "rust-movies",
             "database": "drip-rust-movie-collection"
         }
-    ]
+    ],
+    "editor.defaultFormatter": "jinxdash.prettier-rust"
 }

@@ -5010,6 +5010,7 @@ version = "0.1.0"
 dependencies = [
  "apistos",
  "apistos-schemars",
+ "num-traits",
  "sea-orm",
  "serde",
  "utoipa 3.0.2",
