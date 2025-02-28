@@ -48,17 +48,19 @@ impl User {
     pub fn to_claims(&self, expires: i64) -> UserClaims {
         UserClaims {
             id: self.id,
+            name: self.name.clone(),
             email: self.email.clone(),
-            expires,
+            exp: expires,
         }
     }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserClaims {
-    pub id: Uuid,
-    pub email: String,
-    expires: i64,
+    pub id: Uuid, // Match the User struct
+    pub name: String, // Include the name field
+    pub email: String, // Match the User struct
+    pub exp: i64, // Required: Expiration timestamp
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]

@@ -11,7 +11,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             ::scope("/api")
             // .configure(version_router::init_routes)
             .configure(movies_router::router)
-            .configure(health_router::router)
+            // .configure(health_router::router)
             .configure(token_router::router)
     );
 }

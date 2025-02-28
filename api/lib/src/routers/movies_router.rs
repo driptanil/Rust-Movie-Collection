@@ -1,14 +1,21 @@
 use actix_web::{ get, post, put, delete, web, HttpResponse };
+use actix_web_httpauth::middleware::HttpAuthentication;
 use sea_orm::prelude::Uuid;
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
-use crate::{ services::movie_service::{MovieService, MovieServiceImpl}, utils::error::ApiResult };
+use crate::{
+    services::movie_service::{ MovieService, MovieServiceImpl },
+    utils::{ auth::validator, error::ApiResult },
+};
 
 type Service = web::Data<MovieServiceImpl>;
 
 pub fn router(cfg: &mut web::ServiceConfig) {
+    let auth = HttpAuthentication::bearer(validator);
+
     cfg.service(
         web
             ::scope("/movies")
+            .wrap(auth)
             .service(get_all)
             .service(get_by_id)
             .service(post)
