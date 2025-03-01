@@ -21,6 +21,8 @@ pub enum Relation {
     Review,
     #[sea_orm(has_many = "super::user_password::Entity")]
     UserPassword,
+    #[sea_orm(has_many = "super::user_session::Entity")]
+    UserSession,
 }
 
 impl Related<super::review::Entity> for Entity {
@@ -32,6 +34,12 @@ impl Related<super::review::Entity> for Entity {
 impl Related<super::user_password::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::UserPassword.def()
+    }
+}
+
+impl Related<super::user_session::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserSession.def()
     }
 }
 

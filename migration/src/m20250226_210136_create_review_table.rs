@@ -57,7 +57,7 @@ impl MigrationTrait for Migration {
             r#"
             CREATE TRIGGER update_review_updated_at
             BEFORE UPDATE
-            ON movie
+            ON review
             FOR EACH ROW
             EXECUTE FUNCTION update_updated_at_column();
             "#.to_owned()
@@ -73,7 +73,7 @@ impl MigrationTrait for Migration {
         let drop_trigger_stmt = Statement::from_string(
             manager.get_database_backend(),
             r#"
-            DROP TRIGGER IF EXISTS update_movie_updated_at ON movie;
+            DROP TRIGGER IF EXISTS update_review_updated_at ON review;
             "#.to_owned()
         );
         manager.get_connection().execute(drop_trigger_stmt).await?;

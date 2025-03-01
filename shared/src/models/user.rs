@@ -57,27 +57,10 @@ impl User {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserClaims {
-    pub id: Uuid, // Match the User struct
-    pub name: String, // Include the name field
-    pub email: String, // Match the User struct
-    pub exp: i64, // Required: Expiration timestamp
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]
-pub struct UserToken {
-    #[schema(value_type = String, format = "uuid")]
     pub id: Uuid,
-    pub access_token: String,
-    pub refresh_token: String,
-    #[schema(value_type = String, format = "datetime-utc")]
-    pub created_at: DateTimeWithTimeZone,
-    #[schema(value_type = String, format = "datetime-utc")]
-    pub expires_at: DateTimeWithTimeZone,
-    #[schema(value_type = String, format = "datetime-utc")]
-    pub refresh_expires_at: DateTimeWithTimeZone,
-
-    #[schema(value_type = String, format = "uuid")]
-    pub user_id: Uuid,
+    pub name: String,
+    pub email: String,
+    pub exp: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema, ApiComponent, ToSchema)]

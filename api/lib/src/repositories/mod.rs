@@ -8,6 +8,7 @@ pub mod base_repository;
 pub mod movie_repository;
 pub mod version_repository;
 pub mod user_repository;
+pub mod user_session_repository;
 
 pub type Repository = web::Data<Box<dyn AppRepository>>;
 

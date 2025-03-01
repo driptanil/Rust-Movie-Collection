@@ -3,14 +3,15 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use sea_orm::prelude::Uuid;
 use shared::models::movie::{ CreateMovieRequest, UpdateMovieRequest };
 use crate::{
+    middleware::auth_middleware::auth_middleware,
     services::movie_service::{ MovieService, MovieServiceImpl },
-    utils::{ auth::validator, error::ApiResult },
+    utils::error::ApiResult,
 };
 
 type Service = web::Data<MovieServiceImpl>;
 
 pub fn router(cfg: &mut web::ServiceConfig) {
-    let auth = HttpAuthentication::bearer(validator);
+    let auth = HttpAuthentication::bearer(auth_middleware);
 
     cfg.service(
         web

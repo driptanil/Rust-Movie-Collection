@@ -1,7 +1,7 @@
 use actix_web::{ get, HttpResponse, Responder };
 use utoipa::OpenApi;
-use shared::models::{ movie, user, version };
-use api_lib::routers::{ version_router, movies_router, token_router };
+use shared::models::{ movie, user, user_session, version };
+use api_lib::routers::{ version_router, movies_router, user_router };
 
 #[derive(OpenApi)]
 #[openapi(
@@ -14,8 +14,9 @@ use api_lib::routers::{ version_router, movies_router, token_router };
         movies_router::put,
         movies_router::bulk_put,
         movies_router::delete,
-        token_router::get_token,
-        token_router::create_user,
+        user_router::get_token,
+        user_router::create_user,
+        user_router::refresh_token
     ),
     components(
         schemas(
@@ -24,15 +25,16 @@ use api_lib::routers::{ version_router, movies_router, token_router };
             movie::CreateMovieRequest,
             movie::UpdateMovieRequest,
             user::User,
-            user::UserToken,
             user::LoginRequest,
-            user::CreateUserRequest
+            user::CreateUserRequest,
+            user_session::UserSession,
+            user_session::RefreshUserSessionRequest
         )
     ),
     tags(
         (name = "Movie", description = "Movies routes"),
         (name = "Info", description = "Info routes"),
-        (name = "Token", description = "Token routes"),
+        (name = "Token", description = "Token routes")
     )
 )]
 pub struct ApiDoc;

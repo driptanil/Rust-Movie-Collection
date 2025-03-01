@@ -1,25 +1,11 @@
-use actix_web::{ dev::ServiceRequest, error::ErrorUnauthorized, Error, HttpMessage, HttpRequest };
+use actix_web::{ dev::ServiceRequest, error::ErrorUnauthorized, HttpMessage, Error };
+
 use actix_web_httpauth::extractors::bearer::BearerAuth;
-use chrono::{ Duration, Utc };
-use jsonwebtoken::{ decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation };
+use chrono::Utc;
+use jsonwebtoken::{ decode, Algorithm, DecodingKey, Validation };
 use shared::models::user::{ User, UserClaims };
 
-pub fn generate_jwt_token(user: User) -> (String, i64) {
-    let secret = std::env::var("AUTH_SECRET").unwrap_or_else(|_| "default_secret".to_string());
-
-    let expires: i64 = (Utc::now() + Duration::minutes(1)).timestamp();
-
-    let claims = user.to_claims(expires);
-
-    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_bytes()));
-
-    match token {
-        Ok(t) => (t, expires),
-        Err(e) => panic!("Error generating token: {}", e),
-    }
-}
-
-pub async fn validator(
+pub async fn auth_middleware(
     req: ServiceRequest,
     credentials: BearerAuth
 ) -> Result<ServiceRequest, (Error, ServiceRequest)> {
