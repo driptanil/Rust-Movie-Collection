@@ -11,6 +11,7 @@ use crate::{
     repositories::{
         user_repository::UserRepository,
         user_session_repository::UserSessionRepository,
+        user_password_repository::UserPasswordRepository,
     },
     utils::error::{ ApiError, ApiResult },
 };
@@ -25,14 +26,16 @@ pub trait UserService: Send + Sync + 'static {
 pub struct UserServiceImpl {
     repo: Arc<dyn UserRepository>,
     session_repo: Arc<dyn UserSessionRepository>,
+    password_repo: Arc<dyn UserPasswordRepository>,
 }
 
 impl UserServiceImpl {
     pub fn new(
         repo: Arc<dyn UserRepository>,
-        session_repo: Arc<dyn UserSessionRepository>
+        session_repo: Arc<dyn UserSessionRepository>,
+        password_repo: Arc<dyn UserPasswordRepository>
     ) -> Self {
-        Self { repo, session_repo }
+        Self { repo, session_repo, password_repo }
     }
 
     fn generate_jwt_token(user: User) -> (String, i64) {
@@ -146,8 +149,8 @@ impl UserService for UserServiceImpl {
 
         let user = User::from_model(user.unwrap());
 
-        let user_password = self.repo
-            .get_user_password(user.id).await
+        let user_password = self.password_repo
+            .get_by_user_id(user.id).await
             .map_err(|e| { ApiError::InternalServer(format!("Database error: {:?}", e)) })?;
 
         if let None = user_password {
@@ -189,7 +192,7 @@ impl UserService for UserServiceImpl {
         }
 
         let inserted_user = self.repo
-            .create_user(new_user).await
+            .create(new_user).await
             .map_err(|e| { ApiError::InternalServer("Database error ):".to_owned()) })?;
 
         let user = User::from_model(inserted_user);
@@ -204,8 +207,8 @@ impl UserService for UserServiceImpl {
             password_salt: "".to_owned(),
         };
 
-        self.repo
-            .create_user_password(user_password.to_active_model()).await
+        self.password_repo
+            .create(user_password.to_active_model()).await
             .map_err(|e| { ApiError::InternalServer("Database error ):".to_owned()) })?;
 
         self.generate_session(user.clone()).await

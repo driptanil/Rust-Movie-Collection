@@ -7,6 +7,7 @@ use sea_orm::Database;
 use api_lib::{
     repositories::{
         movie_repository::MovieRepository,
+        user_password_repository::UserPasswordRepository,
         user_repository::UserRepository,
         user_session_repository::UserSessionRepository,
     },
@@ -28,14 +29,21 @@ async fn actix_web(
     check_db_connection(&db).await.map_err(CustomError::new)?;
 
     // Repositories
-    let movie_repository = Arc::new(db.clone()) as Arc<dyn MovieRepository>;
+    let movie_repository: Arc<dyn MovieRepository> = Arc::new(db.clone()) as Arc<
+        dyn MovieRepository
+    >;
     let user_repository = Arc::new(db.clone()) as Arc<dyn UserRepository>;
     let user_session_repository = Arc::new(db.clone()) as Arc<dyn UserSessionRepository>;
+    let user_password_repository = Arc::new(db.clone()) as Arc<dyn UserPasswordRepository>;
 
     // Services
     let movie_service = web::Data::new(MovieServiceImpl::new(movie_repository.clone()));
     let user_service = web::Data::new(
-        UserServiceImpl::new(user_repository.clone(), user_session_repository.clone())
+        UserServiceImpl::new(
+            user_repository.clone(),
+            user_session_repository.clone(),
+            user_password_repository.clone()
+        )
     );
 
     let config = move |cfg: &mut web::ServiceConfig| {
