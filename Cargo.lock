@@ -2936,13 +2936,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "notebooks"
-version = "0.1.0"
-dependencies = [
- "polars",
-]
-
-[[package]]
 name = "now"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
