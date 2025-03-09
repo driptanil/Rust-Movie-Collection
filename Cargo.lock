@@ -20,6 +20,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-cors"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9e772b3bcafe335042b5db010ab7c09013dad6eac4915c91d8d50902769f331"
+dependencies = [
+ "actix-utils",
+ "actix-web",
+ "derive_more",
+ "futures-util",
+ "log",
+ "once_cell",
+ "smallvec",
+]
+
+[[package]]
 name = "actix-http"
 version = "3.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -402,7 +417,7 @@ dependencies = [
  "shared",
  "thiserror 1.0.64",
  "tracing",
- "utoipa 3.0.2",
+ "utoipa",
 ]
 
 [[package]]
@@ -1562,6 +1577,7 @@ checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 name = "drip-rust-movie-collection"
 version = "0.1.0"
 dependencies = [
+ "actix-cors",
  "actix-web",
  "api-lib",
  "migration",
@@ -1572,7 +1588,7 @@ dependencies = [
  "shuttle-shared-db",
  "tokio",
  "tracing",
- "utoipa 3.0.2",
+ "utoipa",
  "utoipa-swagger-ui",
 ]
 
@@ -5029,7 +5045,7 @@ dependencies = [
  "num-traits",
  "sea-orm",
  "serde",
- "utoipa 3.0.2",
+ "utoipa",
 ]
 
 [[package]]
@@ -6245,37 +6261,14 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "utoipa"
-version = "2.4.2"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b626abb3bbbe41ce00df6dea3d109a83a034930245c3307026d82d71e7a06e43"
-dependencies = [
- "indexmap 1.9.3",
- "serde",
- "utoipa-gen 2.4.2",
-]
-
-[[package]]
-name = "utoipa"
-version = "3.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bdd08005ac3ff3aa380060bc30b2ff4a840c4405ea072deba2bad4891e404c0"
+checksum = "68ae74ef183fae36d650f063ae7bde1cacbe1cd7e72b617cbe1e985551878b98"
 dependencies = [
  "indexmap 1.9.3",
  "serde",
  "serde_json",
- "utoipa-gen 3.5.0",
-]
-
-[[package]]
-name = "utoipa-gen"
-version = "2.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "250e8cdb0461b6fbaa1c1acb7f08300d773713fab721776becf5f7386b41a791"
-dependencies = [
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
+ "utoipa-gen",
 ]
 
 [[package]]
@@ -6293,9 +6286,9 @@ dependencies = [
 
 [[package]]
 name = "utoipa-swagger-ui"
-version = "2.0.1"
+version = "3.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ec49afbc72cb3dfbdcc3498143f5ac6cdbd5fa8bd085636d97c24754ce1a53f"
+checksum = "84614caa239fb25b2bb373a52859ffd94605ceb256eeb1d63436325cf81e3653"
 dependencies = [
  "actix-web",
  "mime_guess",
@@ -6303,7 +6296,7 @@ dependencies = [
  "rust-embed",
  "serde",
  "serde_json",
- "utoipa 2.4.2",
+ "utoipa",
  "zip",
 ]
 

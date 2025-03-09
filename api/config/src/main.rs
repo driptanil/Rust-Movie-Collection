@@ -16,6 +16,7 @@ use api_lib::{
     utils::db::check_db_connection,
 };
 use std::sync::Arc;
+use actix_cors::Cors;
 
 #[shuttle_runtime::main]
 async fn actix_web(
@@ -49,8 +50,8 @@ async fn actix_web(
     let config = move |cfg: &mut web::ServiceConfig| {
         cfg.app_data(user_service.clone())
             .app_data(movie_service.clone())
-            .configure(init_routes)
-            .configure(init_docs);
+            .configure(init_docs)
+            .configure(init_routes);
     };
 
     Ok(config.into())

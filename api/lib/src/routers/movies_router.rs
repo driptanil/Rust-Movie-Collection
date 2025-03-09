@@ -14,8 +14,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
     let auth = HttpAuthentication::bearer(auth_middleware);
 
     cfg.service(
-        web
-            ::scope("/movies")
+        web::scope("/movies")
             .wrap(auth)
             .service(get_all)
             .service(get_by_id)
@@ -30,7 +29,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
 #[utoipa::path(
     context_path = "/api/movies",
     responses((status = 200, description = "Get List Movies", body = Vec<Movie>)),
-    tag = "Movie"
+    tag = "Movie",
 )]
 #[get("")]
 pub async fn get_all(service: Service) -> ApiResult<HttpResponse> {

@@ -3,7 +3,10 @@ use shared::models::{
     user::{ CreateUserRequest, LoginRequest },
     user_session::RefreshUserSessionRequest,
 };
-use crate::{ services::user_service::{ UserService, UserServiceImpl }, utils::error::ApiResult };
+use crate::{
+    services::user_service::{ UserService, UserServiceImpl },
+    utils::error::ApiResult,
+};
 
 type Service = web::Data<UserServiceImpl>;
 

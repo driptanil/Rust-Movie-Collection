@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.3.1"
+actix-cors = "0.7.0"
 shuttle-actix-web = "0.52.0"
 shuttle-runtime = "0.52.0"
 tokio = "1.26.0"
@@ -12,14 +13,21 @@ tracing = "0.1"
 
 # database
 shuttle-shared-db = { version = "0.52.0", features = ["postgres", "sqlx"] }
-sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros", "with-chrono", "with-json", "with-uuid" ] }
+sea-orm = { version = "1.0.0", features = [
+    "sqlx-postgres",
+    "runtime-tokio-native-tls",
+    "macros",
+    "with-chrono",
+    "with-json",
+    "with-uuid",
+] }
 
 # lib
 api-lib = { path = "../lib" }
 shared = { path = "../../shared" }
-migration ={ path = "../../migration" }
+migration = { path = "../../migration" }
 
 # docs
 
-utoipa = { version = "= 3.0.2", features = ["actix_extras"] }
-utoipa-swagger-ui = { version = "= 2.0.1", features = ["actix-web"] }
+utoipa = { version = "3.3.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "3.1.3", features = ["actix-web"] }

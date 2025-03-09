@@ -41,7 +41,7 @@ impl UserServiceImpl {
     fn generate_jwt_token(user: User) -> (String, i64) {
         let secret = std::env::var("AUTH_SECRET").unwrap_or_else(|_| "default_secret".to_string());
 
-        let expires: i64 = (Utc::now() + Duration::minutes(1)).timestamp();
+        let expires: i64 = (Utc::now() + Duration::minutes(120)).timestamp();
 
         let claims = user.to_claims(expires);
 
